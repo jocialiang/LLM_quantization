@@ -1,0 +1,8 @@
+# Environment B: evaluation / profiling (03, 04, 05)
+# vllm 0.34.0 requires compressed-tensors==0.17.0, torch==2.14.0, transformers>=5.16.1,<5.23.0
+# -> cannot share an environment with llmcompressor 0.15.0 (needs compressed-tensors==0.20.1)
+vllm==0.34.0
+transformers==5.21.0
+datasets==5.2.0
+pandas==3.1.1
+numpy==2.3.5
