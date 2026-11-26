@@ -507,15 +507,14 @@ Graph mode 把「CPU 需要介入的次數」從「每個 kernel 一次」降為
 
 **後續實驗：逐層決定 `down_proj` 是否量化**
 
-目前的 `ignore_dproj` 是一刀切，**所有層**的 `down_proj` 都保留 FP16，代價是權重由 3.2 GB 增至 3.9 GB。3.4 節的逐層統計顯示，outlier 主要集中在少數幾層（layer 2、3、21，其次 layer 23），因此可以測試只保留這些層為 FP16、其餘層的 `down_proj` 仍做 INT8，看能否在 PPL 幾乎不變的情況下，把記憶體拿回來。
+目前的 `ignore_dproj` 是一刀切，**所有層**的 `down_proj` 都保留 FP16，代價是權重由 3.2 GB 增至 3.9 GB。3.4 節的逐層統計顯示，outlier 主要集中在少數幾層（layer 2、3、33，其次 layer 35），因此可以測試只保留這些層為 FP16、其餘層的 `down_proj` 仍做 INT8，看能否在 PPL 幾乎不變的情況下，把記憶體拿回來。
 
 | 組合 | 保留 FP16 的 `down_proj` | 預期觀察 |
 |---|---|---|
 | A（已測） | 全部層 | PPL 12.03，權重 3.9 GB |
-| B | 只有 max_abs 最大的前 3 層（2、21、3） | PPL 是否仍接近 A |
-| C | B + layer 23 | 前 4 名是否足夠 |
-| D | 只有前幾層與後段幾層（依區間而非依統計挑選） | 以統計挑選是否優於以位置挑選 |
-| E（已測） | 都不保留（SmoothQuant O3 default） | PPL 19.47，權重 3.2 GB |
+| B | 只有 max_abs 最大的前 3 層（2、33、3） | PPL 是否仍接近 A |
+| C | 只有前幾層與後段幾層（依區間而非依統計挑選） | 以統計挑選是否優於以位置挑選 |
+| D（已測） | 都不保留（SmoothQuant O3 default） | PPL 19.47，權重 3.2 GB |
 
 - 做法：llm-compressor 的 `ignore` 欄位可用正規表示式指定層（寫法請依所用版本確認），逐組重跑量化並評估 PPL、權重大小與 prefill／decode 速度。
 - 附帶檢查：以 layer 2 為例，確認 outlier 是否集中在特定 token（例如第一個 token）與特定 channel，以便判斷 outlier 是「token 方向」還是「channel 方向」，兩者適合的對策不同。
