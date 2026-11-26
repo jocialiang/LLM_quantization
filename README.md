@@ -481,7 +481,7 @@ Graph mode 把「CPU 需要介入的次數」從「每個 kernel 一次」降為
 |---|---|---|---|---|
 | **Prefill** | Compute-bound | W8A8（需低精度運算單元） | W8A8 加速 1.35×–1.76×；W4A16 無益（0.90×–1.18×） | NPU 的 INT8 MAC array 正是 W8A8 的用武之地；weight-only 無法利用 |
 | **Decode** | Memory-bound | W4A16、W8A8 皆有效，權重越小越快 | W4A16 3.17×；W8A8 1.83× | 邊緣 NPU 頻寬更低，decode 受益會更明顯 |
-| **記憶體** | — | 量化皆有效 | 約 1.5×–1.9× | 容量與能耗皆受益，也留出空間給 KV cache |
+| **記憶體** | — | 量化皆有效 | 約 1.5×–2.5× | 容量與能耗皆受益，也留出空間給 KV cache |
 | **精度** | — | 需挑選 recipe 與保留敏感層 | PPL：GPTQ +8.6%；SmoothQuant O3 +65.8%，加 `ignore_dproj` 後僅 +2.4% | 在 NPU 上部署 W8A8 時，需評估是否保留 `down_proj` 等敏感層為較高精度 |
 
 重點整理：
